@@ -26,8 +26,8 @@ def u2a(string):
 
 
 #Installing custom fonts
-LabelBase.register(name='Kalpurush_ANSI',fn_regular='fonts/kalpurush ANSI.ttf')
-
+#LabelBase.register(name='Kalpurush_ANSI',fn_regular='fonts/kalpurush ANSI.ttf')
+#marked as comment due the font not uploaded in github
 Image = """
 Image:
     id: 'user_photo'
@@ -56,7 +56,7 @@ class ANIDApp(MDApp):
         #self.nid_photo = Builder.load_string(Image)
         self.web_image = AsyncImage(source='https://www.w3schools.com/tags/img_girl.jpg',pos_hint={'center_x':0.5,'center_y':0.3},size_hint=(0.3,0.3))
         #Card Holder Name
-        self.holder_name = MDFillRoundFlatButton(text='',font_name='Kalpurush_ANSI',pos_hint={'center_x':0.5,'center_y':0.1})
+        self.holder_name = MDFillRoundFlatButton(text='',pos_hint={'center_x':0.5,'center_y':0.1})
         #Binding key press function
         self.date_field.bind(on_press=self.show_date)
         self.check.bind(on_press=self.checknid)
