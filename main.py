@@ -1,7 +1,3 @@
-#Config of Graphics driver
-#import os
-#os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
-
 from kivymd.app import MDApp
 from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import Screen
@@ -11,7 +7,6 @@ from kivymd.uix.picker import MDDatePicker
 from kivymd.uix.dialog import MDDialog
 from kivy.uix.image import AsyncImage
 from kivy.core.text import LabelBase
-from kivy.lang import Builder
 import datetime
 import requests
 from secret import api_key
@@ -26,16 +21,9 @@ def u2a(string):
 
 
 #Installing custom fonts
-#LabelBase.register(name='Kalpurush_ANSI',fn_regular='fonts/kalpurush ANSI.ttf')
-#marked as comment due the font not uploaded in github
-Image = """
-Image:
-    id: 'user_photo'
-    source: 'favicon.ico'
-    pos_hint: {'center_x':0.5,'center_y':0.3}
-"""
+LabelBase.register(name='Sutonny',fn_regular='SutonnyMJ.ttf')
 
-class ANIDApp(MDApp):
+class ANID(MDApp):
 
     def build(self):
         self.title = "APINID Project"
@@ -48,17 +36,17 @@ class ANIDApp(MDApp):
         #NID number input field
         self.nid = MDTextField(hint_text='Enter NID Number',input_filter='int',pos_hint={'center_x':0.5,'center_y':0.8},size_hint=(0.8,None))
         #NID verify button
-        self.check = MDRoundFlatButton(text='Check',pos_hint={'center_x':0.5,'center_y':0.6})
+        self.check = MDRoundFlatButton(text='Check',pos_hint={'center_x':0.5,'center_y':0.6},size_hint=(0.5,None))
         #Date picker
-        self.date_field = MDRaisedButton(text='Select date of birth',pos_hint={'center_x':0.5,'center_y':0.7})
+        self.date_field = MDTextField(hint_text='Select date of birth(yyyy-mm-dd)',pos_hint={'center_x':0.5,'center_y':0.7},size_hint=(0.8,None))
         self.photo_label = MDLabel(text='Photo of the card holder.',halign='center',pos_hint={'center_x':0.5,'center_y':0.5})
         #Image Insert
-        #self.nid_photo = Builder.load_string(Image)
         self.web_image = AsyncImage(source='https://www.w3schools.com/tags/img_girl.jpg',pos_hint={'center_x':0.5,'center_y':0.3},size_hint=(0.3,0.3))
         #Card Holder Name
-        self.holder_name = MDFillRoundFlatButton(text='',pos_hint={'center_x':0.5,'center_y':0.1})
+        self.holder_name = MDFillRoundFlatButton(text='',font_name='Sutonny',pos_hint={'center_x':0.5,'center_y':0.1})
+        #Credit
+        self.credit_text = MDLabel(text='Developed by Sabbirbbs',halign='center',pos_hint={'center_x':0.5,'center_y':0.04})
         #Binding key press function
-        self.date_field.bind(on_press=self.show_date)
         self.check.bind(on_press=self.checknid)
         #Alert dialog
         self.dialog = MDDialog(text="The NID card is valid")
@@ -72,30 +60,17 @@ class ANIDApp(MDApp):
 
         return self.screen
 
-    #Show date picker
-    def show_date(self,instance):
-        date_box = MDDatePicker()
-        date_box.bind(on_save=self.get_date,on_cancel=self.on_cancel)
-        date_box.open()
-
-    #Get date value from picker when ok clicked
-    def get_date(self,instance,value,date_range):
-        self.date_field.text = str(value)
-        self.current_date = value
-
-    #Dismiss date picker & save date value None
-    def on_cancel(self,instance,value):
-        self.current_date = None
-
     #Fucntion to be executed when NID check button clicked
     def checknid(self,instance):
+        self.current_date = self.date_field.text
         if self.current_date and self.nid.text:
             self.check.text = "Wait..."
             self.screen.remove_widget(self.photo_label)
             self.screen.remove_widget(self.web_image)
             self.screen.remove_widget(self.holder_name)
+            self.screen.remove_widget(self.credit_text)
             self.nid_number = self.nid.text
-            self.dob = f"{self.current_date.year}-{self.current_date.month}-{self.current_date.day}"
+            self.dob = self.date_field.text
             self.nid_data = self.gather_nidinfo(self.nid_number,self.dob)
             #Showing result according to api returned data
             if self.nid_data['status'] == 'success':
@@ -104,6 +79,7 @@ class ANIDApp(MDApp):
                 self.screen.add_widget(self.photo_label)
                 self.screen.add_widget(self.web_image)
                 self.screen.add_widget(self.holder_name)
+                self.screen.add_widget(self.credit_text)
             elif self.nid_data['status'] == 'valid':
                 #Alert dialog
                 self.dialog = MDDialog(text='The NID Card is valid but unable to fetch data.').open()            
@@ -113,8 +89,8 @@ class ANIDApp(MDApp):
                 
             self.nid.text = ""
             self.current_date = None
-            self.check.text = "Check Again"
-            self.date_field.text = "Select date of birth"
+            self.check.text = "Check Another"
+            self.date_field.text = ""
         else:
             self.dialog = MDDialog(text="You must enter NID number & select DOB.").open()
         
@@ -136,7 +112,6 @@ class ANIDApp(MDApp):
 
     
 
-if __name__  == '__main__':
-    ANIDApp().run()
+ANID().run()
 
 
